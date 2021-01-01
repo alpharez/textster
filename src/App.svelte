@@ -2,7 +2,7 @@
 	import "./words.js";
 	import { createEventDispatcher, onMount } from "svelte";
 
-	let TICK_DELAY = 1000;
+	let START_TICK_DELAY = 1000;
 	const dispatch = createEventDispatcher();
 	export let name;
 	let GRID_SIZE = 20;
@@ -57,17 +57,23 @@
 
 	function guessedThis(event) {
 		let buttonId = event.target.id;
+
 		guessed[buttonId] = "guessed";
 		guessedLetters.push(letters[buttonId]);
 		// if this guess is wrong decrement guesses left
-		if (!word.includes(letters[buttonId])) {
+		if (word.includes(letters[buttonId])) {
+			if (wordposition[0] > 2) {
+				wordposition[0] -= 2;
+			}
+		} else {
 			guesses_left -= 1;
 		}
 		if (allGuessed()) {
-			alert("YOU WON");
+			//alert("YOU WON");
+			won = true;
+			score += 135 * word.length;
 			reset();
 		}
-		score += 1;
 	}
 
 	$: {
@@ -81,7 +87,7 @@
 		}
 		for (let i = 0; i < word.length; i++) {
 			grid[wordposition[0]][wordposition[1] + i][0] = "letter";
-			if (guessedLetters.includes(word[i])) {
+			if (guessedLetters.includes(word[i]) || lost) {
 				grid[wordposition[0]][wordposition[1] + i][1] = word[i];
 			} else {
 				grid[wordposition[0]][wordposition[1] + i][1] = "";
@@ -91,23 +97,22 @@
 
 	const fn = (n) => {
 		setTimeout(() => {
-			if (wordposition[0] < 19) {
+			if (wordposition[0] < 19 && !won && !lost) {
 				wordposition[0] += 1;
-				score += 1;
 			} else {
 				lost = true;
-				return;
+				//return;
 			}
 			if (guesses_left < 1) {
 				lost = true;
-				return;
+				//return;
 			}
 
-			fn(TICK_DELAY);
+			fn(START_TICK_DELAY);
 		}, n);
 	};
 	onMount(() => {
-		fn(TICK_DELAY);
+		fn(START_TICK_DELAY);
 	});
 
 	function reset() {
@@ -135,10 +140,10 @@
 		grid = [...Array(GRID_SIZE)].map(
 			() => [...Array(GRID_SIZE)].map(() => ["empty", ""]) // [cellclass, letter]
 		);
-		//gridwithword = grid;
+		score = 0;
 		word = wordlist[getRandomInt(wordlist.length)].toUpperCase();
 		wordposition[1] = getRandomInt(GRID_SIZE - word.length);
-		fn(TICK_DELAY);
+		//fn(TICK_DELAY);
 	}
 </script>
 
@@ -154,7 +159,14 @@
 		color: #ff3e00;
 		text-transform: uppercase;
 		font-size: 1.5em;
-		font-weight: 100;
+		font-weight: bold;
+	}
+
+	h3 {
+		color: #333;
+		text-transform: uppercase;
+		font-size: 1.25em;
+		font-weight: bold;
 	}
 
 	@media (min-width: 640px) {
@@ -171,20 +183,24 @@
 	.tcenter {
 		text-align: center;
 	}
+	.vcenter {
+		vertical-align: middle;
+	}
 	.letters {
 		display: flex;
 		justify-content: left;
 		align-items: center;
 	}
 	.square {
-		width: 30px;
-		height: 30px;
+		width: 20px;
+		height: 20px;
 		border: solid 1px #fff;
 	}
 	.empty {
 		color: green;
 		background-color: white;
-		font-size: 1.75em;
+		font-size: 1em;
+		border: solid 1px #ccc;
 	}
 	.notguessed {
 		color: black;
@@ -193,7 +209,7 @@
 	.letter {
 		color: white;
 		background-color: green;
-		font-size: 1.75em;
+		font-size: 1em;
 	}
 	.guessed {
 		color: white;
@@ -205,10 +221,6 @@
 </style>
 
 <main>
-	{#if lost}
-		<h1 class="tcenter">you lost</h1>
-		<h3 class="tcenter"><button on:click={restart}>RESTART</button></h3>
-	{/if}
 	<h1>{name}!</h1>
 	<h3>Guesses left : {guesses_left} Score : {score}</h3>
 	<div>
@@ -229,13 +241,17 @@
 					<button
 						id={i}
 						on:click={guessedThis}
+						disabled={guessed[i] === 'guessed'}
 						class={guessed[i]}>{letters[i]}</button>
 				{/each}
 			</div>
 		</div>
 	</div>
 	{#if lost}
-		<div class="center restart">
+		<div class="vcenter">
+			<h3>Game Over</h3>
+		</div>
+		<div class="vcenter">
 			<button on:click={restart}> Start again </button>
 		</div>
 	{/if}
