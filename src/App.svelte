@@ -1,5 +1,5 @@
 <script>
-	import "./words.js";
+	import { wordlist } from "./words.js";
 	import { createEventDispatcher, onMount } from "svelte";
 
 	let START_TICK_DELAY = 1000;
@@ -15,20 +15,20 @@
 	let letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	let guessedLetters = [];
 	// get word from api
-	let wordlist = [
-		"pneumatic",
-		"success",
-		"abruptly",
-		"askew",
-		"fixable",
-		"happy",
-		"possibly",
-		"soap",
-		"january",
-		"cookies",
-		"donkey",
-		"artist",
-	];
+	// let wordlist = [
+	// 	"pneumatic",
+	// 	"success",
+	// 	"abruptly",
+	// 	"askew",
+	// 	"fixable",
+	// 	"happy",
+	// 	"possibly",
+	// 	"soap",
+	// 	"january",
+	// 	"cookies",
+	// 	"donkey",
+	// 	"artist",
+	// ];
 
 	function getRandomInt(max) {
 		return Math.floor(Math.random() * Math.floor(max));
@@ -72,7 +72,7 @@
 			//alert("YOU WON");
 			won = true;
 			score += 135 * word.length;
-			reset();
+			//reset();
 		}
 	}
 
@@ -99,7 +99,7 @@
 		setTimeout(() => {
 			if (wordposition[0] < 19 && !won && !lost) {
 				wordposition[0] += 1;
-			} else {
+			} else if (!won) {
 				lost = true;
 				//return;
 			}
@@ -254,5 +254,11 @@
 		<div class="vcenter">
 			<button on:click={restart}> Start again </button>
 		</div>
+	{/if}
+	{#if won}
+		<div class="vcenter">
+			<h3>Good Job</h3>
+		</div>
+		<div class="vcenter"><button on:click={reset}> Next Word </button></div>
 	{/if}
 </main>

@@ -1,4 +1,4 @@
-let wordlist = ["able",
+export const wordlist = ["able",
     "about",
     "account",
     "acid",
@@ -853,4 +853,4 @@ let wordlist = ["able",
     "Android"
 ];
 
-export default wordlist;
+//export const wordlist;
