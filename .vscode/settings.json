@@ -1,0 +1,8 @@
+{
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/e9aebed7-2b9a-4aee-a492-7558b4a0d91a/resourceGroups/textster-svelte/providers/Microsoft.Web/sites/texter-svelte",
+    "appService.deploySubpath": "."
+}
